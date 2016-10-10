@@ -47,6 +47,7 @@ app.get('/items', function(request, response) {
     response.json(storage.items);
 });
 
+
 app.get('/users/:username/items', function(request, response){
   var usernameReq = request.params.username
   var userItems = usersArray.filter(function (userItems){ 
@@ -55,6 +56,8 @@ app.get('/users/:username/items', function(request, response){
   var userIndex = usersArray.indexOf(userItems[0])
   response.json(usersArray[userIndex])
 })
+
+
 // POST request
 // using jsonParser as second argument tells express to use the 
 // jsonParser middleware when requests for the route are made.
@@ -70,13 +73,14 @@ app.delete('/items/:id', function(request, response) {
   // this variable is the id of the item that the user wants to delete
   var itemId = Number(request.params.id) 
   // this function uses the filter method to see if the id requested matches an item in the array
+ 
   var itemIdArray = storage.items.filter(function (itemIdArray){ 
     return itemIdArray.id === itemId
   })
   if(itemIdArray.length === 0){
     response.status(404).json("Item not found") // in case the user doesn't send an existing id, a 404 will be sent
   }
-  console.log("items id array: ", itemIdArray) 
+ //console.log("items id array: ", itemIdArray) 
   // variable that tells us the index in the array of the item corresponding to the id
   var index = storage.items.indexOf(itemIdArray[0])
   storage.items.splice(index, 1) // splice method removes the item requested to be removed by the user 
@@ -94,17 +98,26 @@ app.put('/items/:id', jsonParser, function(request, response){
   var itemIdArray = storage.items.filter(function (itemIdArray){ 
     return itemIdArray.id === itemId
   })
+  console.log("this is the item array", itemIdArray)
   if(itemIdArray.length === 0){
     response.status(404).json("No item edited") // in case the user doesn't send an existing id, a 404 will be sent
   }
   // variable that tells us the index in the array of the item corresponding to the id
   var index = storage.items.indexOf(itemIdArray[0])
+  console.log("INDEX",index)
+  var chosenItem = storage.items[index]
+  console.log('THIS IS THE CHOSEN ITEM', chosenItem)
   var keys = Object.keys(request.body)
   keys.forEach(function(key){
-    newItem[key] = request.body[key]
+    console.log("this is the key", storage.items[index[key]])
+    chosenItem[key] = request.body[key]
   })
-  storage.items[index] = newItem
+  console.log("chosen item changed", chosenItem)
+  storage.items[index] = chosenItem
   response.status(200).json(storage.items[index]); //responds with a status 200 when item is successfully removed
 })
 
 app.listen(process.env.PORT || 8080, process.env.IP);
+
+exports.app = app;
+exports.storage = storage;
