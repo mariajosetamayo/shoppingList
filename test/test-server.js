@@ -10,9 +10,7 @@ var storage = server.storage;
 // tells chai to use the HTTP plugin
 chai.use(chaiHttp);
 
-
-
-
+// Tests for shopping list
 describe('Shopping List', function() {
 
     it('should list items on GET', function(done) { //function called to tell mocha that the test has completed. Always include in it blocks.
@@ -127,6 +125,7 @@ describe('Shopping List', function() {
     
 });
 
+// FAIL tests for shopping list
 describe('Shopping List fail tests', function() {
     it('should fail when post without body data', function(done){
         chai.request(app)
@@ -227,17 +226,7 @@ describe('Shopping List fail tests', function() {
     });
 });
 
-//  it('should delete an item on delete'); ya esta hecho
-//     it('should not post to an ID that exists'); ya esta hecho
-//     it('should post without body data'); ya esta
-//     it('should post with something other than a valid JSON'); ya esta hecho
-//     it('should put without and ID in the endpoint'); no vale para codigo
-//     it('should put with different ID in the endpoint than the body'); ya esta
-//     it('should put to an ID that doesnt exist');
-//     it('should put without body data'); ya esta hecho
-//     it('should put with something other than a valid JSON'); ya esta
-//     it('should delete an ID that doesnt exist'); ya esta
-//     it('should delete without an ID in the endpoint')
+
 
 
 
