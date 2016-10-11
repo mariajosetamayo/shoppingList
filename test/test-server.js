@@ -14,21 +14,13 @@ chai.use(chaiHttp);
 
 
 describe('Shopping List', function() {
+
     it('should list items on GET', function(done) { //function called to tell mocha that the test has completed. Always include in it blocks.
         chai.request(app) // tells chai to make request to the app
-            .get('/items') // call get to make a get request to the /items endpoint
-            .end(function(err, res) { // end method runs the function which you pass in when the request is complete
-                res.should.have.status(200); // should style assetion says that the response should have a 200 status code
-                done();
-            });
-    });
-
-    it('should list items on GET', function(done) {
-        chai.request(app)
-        .get('/items')
-        .end(function(err, res) {
+        .get('/items') // call get to make a get request to the /items endpoint
+        .end(function(err, res) { // end method runs the function which you pass in when the request is complete
             should.equal(err, null);
-            res.should.have.status(200);
+            res.should.have.status(200); // should style assetion says that the response should have a 200 status code
             res.should.be.json;
             res.body.should.be.a('array');
             res.body.should.have.length(3);
@@ -43,7 +35,26 @@ describe('Shopping List', function() {
             done();
         });
     });
-     it('should add an item on POST', function(done) {
+    
+    it('should list item with /items/:id on GET', function(done) {
+        chai.request(app)
+            .get('/items/3')
+            .end(function(err, res){
+                should.equal(err, null);
+                res.should.have.status(200);
+                res.should.be.json;
+                res.body.should.be.a('object');
+                res.body.should.have.property('id');
+                res.body.should.have.property('name');
+                res.body.id.should.be.a('number');
+                res.body.name.should.be.a('string');
+                res.body.name.should.equal('Peppers');
+                res.body.id.should.equal(3);
+                done();
+            });
+    });
+    
+    it('should add an item on POST', function(done) {
         chai.request(app)
             .post('/items')
             .send({'name': 'Kale'})
@@ -67,31 +78,12 @@ describe('Shopping List', function() {
                 storage.items[3].name.should.equal('Kale');
                 done();
             });
-     });
-     it('should delete an item on delete', function(done) { 
-        chai.request(app) 
-            .delete('/items/1') 
-            .end(function(err, res) { 
-                should.equal(err, null); 
-                res.should.have.status(200); 
-                res.should.be.json; 
-                res.body.should.be.a('object'); 
-                res.body.should.have.property('name'); 
-                res.body.should.have.property('id'); 
-                res.body.name.should.be.a('string'); 
-                res.body.id.should.be.a('number'); 
-                res.body.name.should.equal('Tomatoes'); 
-                res.body.id.should.equal(1); 
-                done(); 
-            }); 
-    }); 
+    });
      
-    
-    
-    it('should add a new item on put', function(done) { 
+    it('should edit a new item on PUT', function(done) { 
         chai.request(app) 
-            .put('/items/3') 
-            .send({'name': 'Carrot'}) 
+            .put('/items/4') 
+            .send({'name': 'carrot', 'id':4 }) 
             .end(function(err, res) { 
                 should.equal(err, null); 
                 res.should.have.status(200); 
@@ -101,26 +93,150 @@ describe('Shopping List', function() {
                 res.body.should.have.property('id'); 
                 res.body.name.should.be.a('string'); 
                 res.body.id.should.be.a('number'); 
-                res.body.name.should.equal('Carrot'); 
-                res.body.id.should.equal(3); 
+                res.body.name.should.equal('carrot'); 
+                storage.items.should.be.a('array');
+                storage.items.should.have.length(4);
+                storage.items[3].should.be.a('object');
+                storage.items[3].should.have.property('id');
+                storage.items[3].should.have.property('name');
+                storage.items[3].id.should.be.a('number');
+                storage.items[3].name.should.be.a('string');
+                storage.items[3].name.should.be.equal('carrot');
                 done(); 
             });       
     }); 
     
+    it('should delete an item on delete', function(done) {
+    chai.request(app)
+        .delete('/items/4')
+        .end(function(err, res) {
+              should.equal(err, null);
+              res.should.have.status(200);
+              res.should.be.json;
+              res.body.should.be.a('object');
+              res.body.should.have.property('name');
+              res.body.should.have.property('id');
+              res.body.name.should.be.a('string');
+              res.body.id.should.be.a('number');
+              res.body.name.should.equal('carrot');
+              storage.items.should.be.a('array');
+              storage.items.should.have.length(3);
+              done();
+        });
+  });
     
 });
 
- it('should delete an item on delete');
-    it('should post to an ID that exists');
-    it('should post without body data');
-    it('should post with something other than a valid JSON');
-    it('should put without and ID in the endpoint');
-    it('should put with different ID in the endpoint than the body');
-    it('should put to an ID that doesnt exist');
-    it('should put without body data');
-    it('should put with something other than a valid JSON');
-    it('should delete an ID that doesnt exist');
-    it('should delete without an ID in the endpoint')
+describe('Shopping List fail tests', function() {
+    it('should fail when post without body data', function(done){
+        chai.request(app)
+        .post('/items')
+        .end(function(err, res){
+            should.equal(err.message, "Bad Request");
+            res.should.have.status(400);
+            done();
+        });
+    });
+    
+    it('should fail when post with something other than a valid JSON', function(done) {
+        chai.request(app)
+        .post('/items')
+        .end(function(err,res){
+            should.equal(err.message, "Bad Request");
+            res.should.have.status(400);
+            done();
+        });
+    });
+    
+    it('should fail put without body data', function(done) {
+        chai.request(app)
+            .put('/items/3')
+            .end(function(err, res){
+                should.equal(err.message, "Bad Request");
+                res.should.have.status(400);
+                done();
+            });
+    });
+    
+    it('should fail when put with something other than a valid JSON', function(done) {
+        chai.request(app)
+            .put('/items/3')
+            .end(function(err, res){
+                should.equal(err.message, "Bad Request");
+                res.should.have.status(400);
+                done();
+            });
+    });
+    
+    it('should fail when put with a different id in the endpoint than the body', function(done) {
+        chai.request(app)
+            .put('/items/3')
+            .send({"name": "Kale", "id":4})
+            .end(function(err, res){
+                should.equal(err.message, "Bad Request");
+                res.should.have.status(400);
+                done();
+            });
+    });
+    
+    it('should fail to delete an id that does not exist', function(done) {
+        chai.request(app)
+            .delete('/items/367268')
+            .end(function(err, res){
+                should.equal(err.message, "Not Found");
+                res.should.have.status(404);
+                done();
+            });
+    });
+    
+    it('should fail to delete without an ID in the endpoint', function(done) {
+        chai.request(app)
+            .delete('/items')
+            .end(function(err, res){
+                should.equal(err.message, "Bad Request");
+                res.should.have.status(400);
+                done();
+            });
+    });
+    
+    it('should create a new item when you PUT an item to an ID that does not exist', function(done) {
+        chai.request(app)
+            .put('/items/4234')
+            .send({'name': 'Kale', 'id': 4234})
+            .end(function(err, res){
+                should.equal(err, null);
+                res.should.have.status(201);
+                res.should.be.json
+                res.body.should.be.a('object');
+                res.body.should.have.property('name');
+                res.body.should.have.property('id');
+                res.body.name.should.be.a('string');
+                res.body.id.should.be.a('number');
+                res.body.name.should.equal('Kale');
+                storage.items.should.be.a('array');
+                storage.items.should.have.length(4);
+                storage.items[3].should.be.a('object');
+                storage.items[3].should.have.property('id');
+                storage.items[3].should.have.property('name');
+                storage.items[3].id.should.be.a('number');
+                storage.items[3].name.should.be.a('string');
+                storage.items[3].name.should.be.equal('Kale');
+                done();
+            });
+    });
+});
+
+//  it('should delete an item on delete'); ya esta hecho
+//     it('should not post to an ID that exists'); ya esta hecho
+//     it('should post without body data'); ya esta
+//     it('should post with something other than a valid JSON'); ya esta hecho
+//     it('should put without and ID in the endpoint'); no vale para codigo
+//     it('should put with different ID in the endpoint than the body'); ya esta
+//     it('should put to an ID that doesnt exist');
+//     it('should put without body data'); ya esta hecho
+//     it('should put with something other than a valid JSON'); ya esta
+//     it('should delete an ID that doesnt exist'); ya esta
+//     it('should delete without an ID in the endpoint')
 
 
 
