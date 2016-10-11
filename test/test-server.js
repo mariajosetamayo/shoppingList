@@ -201,27 +201,28 @@ describe('Shopping List fail tests', function() {
     
     it('should create a new item when you PUT an item to an ID that does not exist', function(done) {
         chai.request(app)
-            .put('/items/4234')
-            .send({'name': 'Kale', 'id': 4234})
-            .end(function(err, res){
-                should.equal(err, null);
-                res.should.have.status(201);
-                res.should.be.json
-                res.body.should.be.a('object');
-                res.body.should.have.property('name');
-                res.body.should.have.property('id');
-                res.body.name.should.be.a('string');
-                res.body.id.should.be.a('number');
-                res.body.name.should.equal('Kale');
-                storage.items.should.be.a('array');
-                storage.items.should.have.length(4);
-                storage.items[3].should.be.a('object');
-                storage.items[3].should.have.property('id');
-                storage.items[3].should.have.property('name');
-                storage.items[3].id.should.be.a('number');
-                storage.items[3].name.should.be.a('string');
-                storage.items[3].name.should.be.equal('Kale');
-                done();
+            chai.request(app)
+                .put('/items/2222')
+                .send({'name': 'Papaya', 'id':2222 })
+                .end(function(err, res) {
+                  should.equal(err, null);
+                  res.should.have.status(201);
+                  res.should.be.json;
+                  res.body.should.be.a('object');
+                  res.body.should.have.property('name');
+                  res.body.should.have.property('id');
+                  res.body.name.should.be.a('string');
+                  res.body.id.should.be.a('number');
+                  res.body.name.should.equal('Papaya');
+                  storage.items.should.be.a('array');
+                  storage.items.should.have.length(4);
+                  storage.items[3].should.be.a('object');
+                  storage.items[3].should.have.property('id');
+                  storage.items[3].should.have.property('name');
+                  storage.items[3].id.should.be.a('number');
+                  storage.items[3].name.should.be.a('string');
+                  storage.items[3].name.should.equal('Papaya');
+                  done();
             });
     });
 });

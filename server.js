@@ -47,7 +47,7 @@ var usersArray = [user1,user2]
 var app = express();
 app.use(express.static('public'));
 
-// GET all items
+// GET all items 
 app.get('/items', function(request, response) {
     response.json(storage.items);
 });
@@ -114,7 +114,7 @@ app.put('/items/:id', jsonParser, function(request, response){
     response.status(200).json(chosenItem); //responds with a status 200 when item is successfully removed
   }
   else{
-    var item = request.add(request.body.name);
+    var item = storage.add(request.body.name);
     response.status(201).json(item);
   }
 });
@@ -138,8 +138,6 @@ app.delete('/items/:id', function(request, response) {
 app.delete('/items/', function(request, response){
   return response.status(400).json("Bad Request")
 })
-
-
 
 app.listen(process.env.PORT || 8080, process.env.IP);
 
